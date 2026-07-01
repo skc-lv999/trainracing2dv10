@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@keyframes speedline {
+  0% {
+    transform: translateX(150px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-1200px);
+    opacity: 0;
+  }
+}
+
+.animate-speedline {
+  animation: speedline linear infinite;
+}
+
