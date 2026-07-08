@@ -11,7 +11,7 @@ export interface PlayerStats {
   derailTimeLeft: number; // time left to re-rail (seconds)
   finished: boolean;     // has crossed finish line
   finishTime?: number;   // race completion time (ms)
-  acquiredTrains?: ('yamanote' | 'chuo' | 'shonan')[]; // list of acquired trains
+  acquiredTrains?: ('yamanote' | 'chuo' | 'shonan' | 'yokosuka' | 'sobukanko' | 'keiyo')[]; // list of acquired trains
 }
 
 export interface TrackFeature {
@@ -34,7 +34,7 @@ export interface GameRoom {
   countdownSec?: number;  // remaining seconds during countdown
   winnerId?: string;
   trackLength: number;    // total track length in meters
-  line: 'yamanote' | 'chuo' | 'shonan';
+  line: 'yamanote' | 'chuo' | 'shonan' | 'yokosuka' | 'sobukanko' | 'keiyo';
 }
 
 export interface LeaderboardEntry {

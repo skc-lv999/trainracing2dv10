@@ -46,7 +46,7 @@ function saveLeaderboard(entries: LeaderboardEntry[]) {
 }
 
 // Generate deterministic track features
-function generateTrackFeatures(line: "yamanote" | "chuo" | "shonan"): TrackFeature[] {
+function generateTrackFeatures(line: "yamanote" | "chuo" | "shonan" | "yokosuka" | "sobukanko" | "keiyo"): TrackFeature[] {
   if (line === "yamanote") {
     return [
       {
@@ -213,6 +213,255 @@ function generateTrackFeatures(line: "yamanote" | "chuo" | "shonan"): TrackFeatu
         label: "第五閉塞信号機 (Fifth Block Signal)",
       }
     ];
+  } else if (line === "yokosuka") {
+    return [
+      {
+        id: "limit_1",
+        type: "speed_limit",
+        position: 1200,
+        length: 1000,
+        value: 85,
+        label: "多摩川橋梁制限 (Tama River Bridge Limit)",
+      },
+      {
+        id: "signal_1",
+        type: "signal",
+        position: 2700,
+        length: 10,
+        value: 0,
+        label: "第一閉塞信号機 (First Block Signal)",
+      },
+      {
+        id: "limit_2",
+        type: "speed_limit",
+        position: 4700,
+        length: 1200,
+        value: 95,
+        label: "鶴見カーブ制限 (Tsurumi Curve Limit)",
+      },
+      {
+        id: "signal_2",
+        type: "signal",
+        position: 6500,
+        length: 10,
+        value: 0,
+        label: "第二閉塞信号機 (Second Block Signal)",
+      },
+      {
+        id: "limit_3",
+        type: "speed_limit",
+        position: 8700,
+        length: 1200,
+        value: 90,
+        label: "保土ヶ谷カーブ制限 (Hodogaya Curve Limit)",
+      },
+      {
+        id: "signal_3",
+        type: "signal",
+        position: 10500,
+        length: 10,
+        value: 0,
+        label: "第三閉塞信号機 (Third Block Signal)",
+      },
+      {
+        id: "limit_4",
+        type: "speed_limit",
+        position: 12700,
+        length: 1200,
+        value: 75,
+        label: "戸塚手前急カーブ制限 (Totsuka Curve Limit)",
+      },
+      {
+        id: "signal_4",
+        type: "signal",
+        position: 14500,
+        length: 10,
+        value: 0,
+        label: "第四閉塞信号機 (Fourth Block Signal)",
+      },
+      {
+        id: "limit_5",
+        type: "speed_limit",
+        position: 16700,
+        length: 1200,
+        value: 80,
+        label: "北鎌倉山間部制限 (Kita-Kamakura Valley Limit)",
+      },
+      {
+        id: "signal_5",
+        type: "signal",
+        position: 18500,
+        length: 10,
+        value: 0,
+        label: "第五閉塞信号機 (Fifth Block Signal)",
+      }
+    ];
+  } else if (line === "sobukanko") {
+    return [
+      {
+        id: "limit_1",
+        type: "speed_limit",
+        position: 800,
+        length: 500,
+        value: 65,
+        label: "隅田川橋梁制限 (Sumida River Bridge Limit)",
+      },
+      {
+        id: "signal_1",
+        type: "signal",
+        position: 1800,
+        length: 10,
+        value: 0,
+        label: "第一閉塞信号機 (First Block Signal)",
+      },
+      {
+        id: "limit_2",
+        type: "speed_limit",
+        position: 3300,
+        length: 600,
+        value: 75,
+        label: "亀戸急カーブ制限 (Kameido Curve Limit)",
+      },
+      {
+        id: "signal_2",
+        type: "signal",
+        position: 4300,
+        length: 10,
+        value: 0,
+        label: "第二閉塞信号機 (Second Block Signal)",
+      },
+      {
+        id: "limit_3",
+        type: "speed_limit",
+        position: 5800,
+        length: 600,
+        value: 70,
+        label: "荒川鉄橋前カーブ制限 (Arakawa Curve Limit)",
+      },
+      {
+        id: "signal_3",
+        type: "signal",
+        position: 6800,
+        length: 10,
+        value: 0,
+        label: "第三閉塞信号機 (Third Block Signal)",
+      },
+      {
+        id: "limit_4",
+        type: "speed_limit",
+        position: 8300,
+        length: 600,
+        value: 80,
+        label: "平井直線速度制限 (Hirai Straight Limit)",
+      },
+      {
+        id: "signal_4",
+        type: "signal",
+        position: 9300,
+        length: 10,
+        value: 0,
+        label: "第四閉塞信号機 (Fourth Block Signal)",
+      },
+      {
+        id: "limit_5",
+        type: "speed_limit",
+        position: 10800,
+        length: 600,
+        value: 85,
+        label: "新小岩手前カーブ制限 (Shin-Koiwa Curve Limit)",
+      },
+      {
+        id: "signal_5",
+        type: "signal",
+        position: 11800,
+        length: 10,
+        value: 0,
+        label: "第五閉塞信号機 (Fifth Block Signal)",
+      }
+    ];
+  } else if (line === "keiyo") {
+    return [
+      {
+        id: "limit_1",
+        type: "speed_limit",
+        position: 1000,
+        length: 800,
+        value: 90,
+        label: "地下区間進出制限 (Underground Exit Limit)",
+      },
+      {
+        id: "signal_1",
+        type: "signal",
+        position: 2200,
+        length: 10,
+        value: 0,
+        label: "第一閉塞信号機 (First Block Signal)",
+      },
+      {
+        id: "limit_2",
+        type: "speed_limit",
+        position: 4200,
+        length: 1000,
+        value: 100,
+        label: "高架高速度直線制限 (High Speed Viaduct)",
+      },
+      {
+        id: "signal_2",
+        type: "signal",
+        position: 5700,
+        length: 10,
+        value: 0,
+        label: "第二閉塞信号機 (Second Block Signal)",
+      },
+      {
+        id: "limit_3",
+        type: "speed_limit",
+        position: 7700,
+        length: 1000,
+        value: 95,
+        label: "運河鉄橋制限 (Canal Bridge Limit)",
+      },
+      {
+        id: "signal_3",
+        type: "signal",
+        position: 9200,
+        length: 10,
+        value: 0,
+        label: "第三閉塞信号機 (Third Block Signal)",
+      },
+      {
+        id: "limit_4",
+        type: "speed_limit",
+        position: 11200,
+        length: 1000,
+        value: 85,
+        label: "ディズニーリゾート近隣湾曲制限 (Disneyland Curve)",
+      },
+      {
+        id: "signal_4",
+        type: "signal",
+        position: 12700,
+        length: 10,
+        value: 0,
+        label: "第四閉塞信号機 (Fourth Block Signal)",
+      },
+      {
+        id: "limit_5",
+        type: "speed_limit",
+        position: 14700,
+        length: 1000,
+        value: 100,
+        label: "舞浜進入前直線制限 (Maihama Straight Limit)",
+      },
+      {
+        id: "signal_5",
+        type: "signal",
+        position: 16200,
+        length: 10,
+        value: 0,
+        label: "第五閉塞信号機 (Fifth Block Signal)",
+      }
+    ];
   } else {
     // shonan (default)
     return [
@@ -332,8 +581,8 @@ app.post("/api/matchmaking/join", (req, res) => {
     return;
   }
 
-  const requestedLine: "yamanote" | "chuo" | "shonan" = (line === "yamanote" || line === "chuo" || line === "shonan") ? line : "shonan";
-  const trackLength = requestedLine === "yamanote" ? 13000 : requestedLine === "chuo" ? 18000 : 21000;
+  const requestedLine: "yamanote" | "chuo" | "shonan" | "yokosuka" | "sobukanko" | "keiyo" = (line === "yamanote" || line === "chuo" || line === "shonan" || line === "yokosuka" || line === "sobukanko" || line === "keiyo") ? line : "shonan";
+  const trackLength = requestedLine === "yamanote" ? 13000 : requestedLine === "chuo" ? 18000 : requestedLine === "sobukanko" ? 13500 : requestedLine === "keiyo" ? 18000 : 21000;
 
   const playerId = "p_" + Math.random().toString(36).substring(2, 9);
   const formattedName = name.substring(0, 16);
@@ -427,6 +676,12 @@ app.post("/api/rooms/:roomId/cpu", (req, res) => {
     cpuName = "山手クイックライナ (CPU Driver)";
   } else if (room.line === "chuo") {
     cpuName = "中央特快クイック (CPU Driver)";
+  } else if (room.line === "yokosuka") {
+    cpuName = "スカ色爆走快速 (CPU Driver)";
+  } else if (room.line === "sobukanko") {
+    cpuName = "イエロー各駅停車 (CPU Driver)";
+  } else if (room.line === "keiyo") {
+    cpuName = "京葉快速赤い彗星 (CPU Driver)";
   }
 
   const cpuId = "cpu_" + Math.random().toString(36).substring(2, 9);

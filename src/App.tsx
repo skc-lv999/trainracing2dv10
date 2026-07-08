@@ -4,11 +4,13 @@ import { MasconController } from "./components/MasconController.js";
 import { MasconState, PlayerStats, GameRoom, TrackFeature, LeaderboardEntry } from "./types.js";
 import { motion, AnimatePresence } from "motion/react";
 import { Trophy, Compass, ShieldAlert, Zap, Award, Train, Users, ShieldAlert as AlertIcon, RotateCcw, Volume2, VolumeX, Landmark } from "lucide-react";
+// @ts-ignore
 import titleLogoUrl from "./assets/images/title_logo_new_1782885604057.jpg";
+// @ts-ignore
 import lobbyBgUrl from "./assets/images/clean_train_lobby_new_1782885411123.jpg";
 
 // Support multiple lines configurations with 5 stations per stage
-export const getLineConfig = (lineName: 'yamanote' | 'chuo' | 'shonan', stationIdx: number = 0) => {
+export const getLineConfig = (lineName: 'yamanote' | 'chuo' | 'shonan' | 'yokosuka' | 'sobukanko' | 'keiyo', stationIdx: number = 0) => {
   if (lineName === 'yamanote') {
     const stations = [
       { label: "恵比寿駅", englishLabel: "EBISU STATION (Ebisu)", start: 2460, stop: 2500, end: 2540 },
@@ -51,6 +53,69 @@ export const getLineConfig = (lineName: 'yamanote' | 'chuo' | 'shonan', stationI
       signal2: 2200 + stationIdx * 3500 + 500,
       quotaTime: 850, // Stage quota Time
     };
+  } else if (lineName === 'yokosuka') {
+    const stations = [
+      { label: "武蔵小杉駅", englishLabel: "MUSASHI-KOSUGI STATION (Musashi-Kosugi)", start: 3460, stop: 3500, end: 3540 },
+      { label: "新川崎駅", englishLabel: "SHIN-KAWASAKI STATION (Shin-Kawasaki)", start: 7460, stop: 7500, end: 7540 },
+      { label: "横浜駅", englishLabel: "YOKOHAMA STATION (Yokohama)", start: 11460, stop: 11500, end: 11540 },
+      { label: "大船駅", englishLabel: "OFUNA STATION (Ofuna)", start: 15460, stop: 15500, end: 15540 },
+      { label: "鎌倉駅", englishLabel: "KAMAKURA STATION (Kamakura)", start: 19460, stop: 19500, end: 19540, isTerminal: true },
+    ];
+    const st = stations[stationIdx] || stations[stations.length - 1];
+    return {
+      trackLength: 21000,
+      stationStart: st.start,
+      stationStop: st.stop,
+      stationEnd: st.end,
+      stationLabel: st.label,
+      stationEnglishLabel: st.englishLabel,
+      stations,
+      signal1: 2700 + stationIdx * 4000,
+      signal2: 2700 + stationIdx * 4000 + 600,
+      quotaTime: 980, // Stage quota Time
+    };
+  } else if (lineName === 'sobukanko') {
+    const stations = [
+      { label: "浅草橋駅", englishLabel: "ASAKUSABASHI STATION (Asakusabashi)", start: 2460, stop: 2500, end: 2540 },
+      { label: "両国駅", englishLabel: "RYOGOKU STATION (Ryogoku)", start: 4960, stop: 5000, end: 5040 },
+      { label: "錦糸町駅", englishLabel: "KINSICHO STATION (Kinshicho)", start: 7460, stop: 7500, end: 7540 },
+      { label: "亀戸駅", englishLabel: "KAMEIDO STATION (Kameido)", start: 9960, stop: 10000, end: 10040 },
+      { label: "新小岩駅", englishLabel: "SHIN-KOIWA STATION (Shin-Koiwa)", start: 12460, stop: 12500, end: 12540, isTerminal: true },
+    ];
+    const st = stations[stationIdx] || stations[stations.length - 1];
+    return {
+      trackLength: 13500,
+      stationStart: st.start,
+      stationStop: st.stop,
+      stationEnd: st.end,
+      stationLabel: st.label,
+      stationEnglishLabel: st.englishLabel,
+      stations,
+      signal1: 1800 + stationIdx * 2500,
+      signal2: 1800 + stationIdx * 2500 + 400,
+      quotaTime: 680, // Stage quota Time
+    };
+  } else if (lineName === 'keiyo') {
+    const stations = [
+      { label: "八丁堀駅", englishLabel: "HATCHOBORI STATION (Hatchobori)", start: 2960, stop: 3000, end: 3040 },
+      { label: "越中島駅", englishLabel: "ETCHUJIMA STATION (Etchujima)", start: 6460, stop: 6500, end: 6540 },
+      { label: "潮見駅", englishLabel: "SHIOMI STATION (Shiomi)", start: 9960, stop: 10000, end: 10040 },
+      { label: "新木場駅", englishLabel: "SHIN-KIBA STATION (Shin-Kiba)", start: 13460, stop: 13500, end: 13540 },
+      { label: "舞浜駅", englishLabel: "MAIHAMA STATION (Maihama)", start: 16960, stop: 17000, end: 17040, isTerminal: true },
+    ];
+    const st = stations[stationIdx] || stations[stations.length - 1];
+    return {
+      trackLength: 18000,
+      stationStart: st.start,
+      stationStop: st.stop,
+      stationEnd: st.end,
+      stationLabel: st.label,
+      stationEnglishLabel: st.englishLabel,
+      stations,
+      signal1: 2200 + stationIdx * 3500,
+      signal2: 2200 + stationIdx * 3500 + 500,
+      quotaTime: 880, // Stage quota Time
+    };
   } else {
     // shonan
     const stations = [
@@ -74,6 +139,183 @@ export const getLineConfig = (lineName: 'yamanote' | 'chuo' | 'shonan', stationI
       quotaTime: 950, // Stage quota Time
     };
   }
+};
+
+// Deterministic seeded random number generator
+const getSeededRandom = (seed: string) => {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  return function() {
+    h = Math.imul(h ^ h >>> 16, 2246822507) | 0;
+    h = Math.imul(h ^ h >>> 13, 3266489909) | 0;
+    return ((h ^ h >>> 16) >>> 0) / 4294967296;
+  };
+};
+
+const getSpeedLimitsForLine = (line: string): { start: number; end: number }[] => {
+  if (line === 'yamanote' || line === 'sobukanko') {
+    return [
+      { start: 800, end: 1300 },
+      { start: 3300, end: 3900 },
+      { start: 5800, end: 6400 },
+      { start: 8300, end: 8900 },
+      { start: 10800, end: 11400 }
+    ];
+  } else if (line === 'chuo' || line === 'keiyo') {
+    return [
+      { start: 1000, end: 1800 },
+      { start: 4200, end: 5200 },
+      { start: 7700, end: 8700 },
+      { start: 11200, end: 12200 },
+      { start: 14700, end: 15700 }
+    ];
+  } else { // shonan, yokosuka, default
+    return [
+      { start: 1200, end: 2200 },
+      { start: 4700, end: 5900 },
+      { start: 8700, end: 9900 },
+      { start: 12700, end: 13900 },
+      { start: 16700, end: 17900 }
+    ];
+  }
+};
+
+const getWeatherAtPosition = (pos: number, line: string, roomId?: string | null) => {
+  let resolvedLine: 'yamanote' | 'chuo' | 'shonan' | 'yokosuka' | 'sobukanko' | 'keiyo' = 'shonan';
+  if (['yamanote', 'chuo', 'shonan', 'yokosuka', 'sobukanko', 'keiyo'].includes(line)) {
+    resolvedLine = line as any;
+  }
+  
+  const config = getLineConfig(resolvedLine, 0);
+  const stations = config?.stations || [];
+  const speedLimits = getSpeedLimitsForLine(resolvedLine);
+  
+  let fogDensity = 0;
+  let rainIntensity = 0;
+  
+  // Seed based on room ID
+  const seed = roomId || "lobby-default-seed";
+  
+  for (let i = 0; i < stations.length; i++) {
+    const interStart = i === 0 ? 100 : stations[i - 1].end + 50;
+    const interEnd = stations[i].start - 50;
+    
+    if (interEnd <= interStart) continue;
+    
+    // Create seeded RNG for this segment
+    const rng = getSeededRandom(`${seed}-${resolvedLine}-${i}`);
+    const randType = rng();
+    const randOffset = rng();
+    const randWidth = rng();
+    
+    // Determine weather type for this segment: Sunny (35%), Foggy (20%), Rainy (30%), Heavy Rain (15%)
+    let type: 'sunny' | 'foggy' | 'rainy' | 'heavy_rain' = 'sunny';
+    if (randType < 0.35) {
+      type = 'sunny';
+    } else if (randType < 0.55) {
+      type = 'foggy';
+    } else if (randType < 0.85) {
+      type = 'rainy';
+    } else {
+      type = 'heavy_rain';
+    }
+    
+    if (type === 'sunny') continue;
+    
+    // Exclude speed limit zones from the available track segment to find safe areas for weather changes.
+    // We add a 100m buffer around each speed limit zone for smooth transition space.
+    let safeSegments: { start: number; end: number }[] = [{ start: interStart, end: interEnd }];
+    
+    for (const limit of speedLimits) {
+      const limitStart = limit.start - 100;
+      const limitEnd = limit.end + 100;
+      
+      const nextSegments: { start: number; end: number }[] = [];
+      for (const seg of safeSegments) {
+        if (limitEnd <= seg.start || limitStart >= seg.end) {
+          nextSegments.push(seg);
+        } else {
+          if (limitStart > seg.start) {
+            nextSegments.push({ start: seg.start, end: limitStart });
+          }
+          if (limitEnd < seg.end) {
+            nextSegments.push({ start: limitEnd, end: seg.end });
+          }
+        }
+      }
+      safeSegments = nextSegments;
+    }
+    
+    // Select the best safe segment (one closest to the original inter-station midpoint, with sufficient length)
+    const origMid = (interStart + interEnd) / 2;
+    let bestSeg: { start: number; end: number } | null = null;
+    let minDistance = Infinity;
+    
+    // Prefer segments with at least 250m length to allow room for the weather event and its transitions
+    const candidateSegments = safeSegments.filter(seg => (seg.end - seg.start) >= 250);
+    const activeCandidates = candidateSegments.length > 0 ? candidateSegments : safeSegments;
+    
+    for (const seg of activeCandidates) {
+      const segMid = (seg.start + seg.end) / 2;
+      const distance = Math.abs(segMid - origMid);
+      if (distance < minDistance) {
+        minDistance = distance;
+        bestSeg = seg;
+      }
+    }
+    
+    if (!bestSeg) continue;
+    
+    const segStart = bestSeg.start;
+    const segEnd = bestSeg.end;
+    const segMid = (segStart + segEnd) / 2;
+    const segLength = segEnd - segStart;
+    
+    // Position the center around the midpoint of the selected safe segment with a small randomized offset (up to 10%)
+    const center = segMid + (randOffset * 2 - 1) * (segLength * 0.1);
+    
+    // Determine width spanning 40% to 75% of the safe segment
+    const width = segLength * (0.4 + randWidth * 0.35);
+    
+    const start = Math.max(segStart, center - width / 2);
+    const end = Math.min(segEnd, center + width / 2);
+    
+    // Smooth transition fade-in/fade-out (up to 100 meters, constrained to safe segment)
+    const fadeBuffer = Math.min(100, (end - start) * 0.2);
+    
+    if (pos >= start - fadeBuffer && pos <= end + fadeBuffer) {
+      let intensity = 0;
+      if (pos >= start && pos <= end) {
+        intensity = 1.0;
+      } else if (pos >= start - fadeBuffer && pos < start) {
+        intensity = (pos - (start - fadeBuffer)) / fadeBuffer;
+      } else if (pos > end && pos <= end + fadeBuffer) {
+        intensity = (fadeBuffer - (pos - end)) / fadeBuffer;
+      }
+      
+      if (type === 'foggy') {
+        fogDensity = Math.max(fogDensity, intensity);
+      } else if (type === 'rainy') {
+        rainIntensity = Math.max(rainIntensity, intensity * 0.5); // Standard rain intensity up to 0.5
+      } else if (type === 'heavy_rain') {
+        rainIntensity = Math.max(rainIntensity, intensity * 1.0); // Heavy rain intensity up to 1.0
+      }
+    }
+  }
+  
+  return { fogDensity, rainIntensity };
+};
+
+// Calculates real-time fog weather density based on train's actual track position and active route
+const getFogDensity = (pos: number, line: string, roomId?: string | null): number => {
+  return getWeatherAtPosition(pos, line, roomId).fogDensity;
+};
+
+// Calculates real-time rain weather intensity based on train's actual track position and active route
+const getRainIntensity = (pos: number, line: string, roomId?: string | null): number => {
+  return getWeatherAtPosition(pos, line, roomId).rainIntensity;
 };
 
 // Hook to dynamically remove white background from a JPG logo using border-seeded BFS flood-fill and edge anti-aliasing
@@ -206,11 +448,18 @@ class TrainAudioEngine {
   private isMuted: boolean = false;
   private bgmInterval: any = null;
   private currentBgmStep: number = 0;
+  private lobbyBgmInterval: any = null;
+  private currentLobbyBgmStep: number = 0;
   
   // Motor inverter simulation oscillators
   private motorOsc1: OscillatorNode | null = null;
   private motorOsc2: OscillatorNode | null = null;
   private motorGain: GainNode | null = null;
+
+  // Brake sound simulation oscillators and nodes
+  private brakeOsc: OscillatorNode | null = null;
+  private brakeOsc2: OscillatorNode | null = null;
+  private brakeGain: GainNode | null = null;
 
   constructor() {}
 
@@ -222,6 +471,9 @@ class TrainAudioEngine {
     this.isMuted = muted;
     if (this.motorGain) {
       this.motorGain.gain.setValueAtTime(muted ? 0 : 0.04, this.ctx?.currentTime || 0);
+    }
+    if (this.brakeGain) {
+      this.brakeGain.gain.setValueAtTime(0, this.ctx?.currentTime || 0);
     }
   }
 
@@ -288,7 +540,117 @@ class TrainAudioEngine {
     this.motorOsc2.frequency.setTargetAtTime(f2, this.ctx.currentTime, 0.12);
   }
 
+  // Metallic friction brake sound synthesis
+  startBrake() {
+    if (!this.ctx) return;
+    this.stopBrake();
+    try {
+      this.brakeOsc = this.ctx.createOscillator();
+      this.brakeOsc2 = this.ctx.createOscillator();
+      this.brakeGain = this.ctx.createGain();
+
+      this.brakeOsc.type = "sawtooth";
+      this.brakeOsc2.type = "triangle";
+
+      // Brake squeal initial high pitch
+      this.brakeOsc.frequency.setValueAtTime(3200, this.ctx.currentTime);
+      this.brakeOsc2.frequency.setValueAtTime(3250, this.ctx.currentTime);
+
+      this.brakeGain.gain.setValueAtTime(0, this.ctx.currentTime);
+
+      // Bandpass filter to isolate metallic squealing friction frequencies
+      const bpf = this.ctx.createBiquadFilter();
+      bpf.type = "bandpass";
+      bpf.frequency.setValueAtTime(3000, this.ctx.currentTime);
+      bpf.Q.setValueAtTime(2.5, this.ctx.currentTime);
+
+      this.brakeOsc.connect(bpf);
+      this.brakeOsc2.connect(bpf);
+      bpf.connect(this.brakeGain);
+      this.brakeGain.connect(this.ctx.destination);
+
+      this.brakeOsc.start();
+      this.brakeOsc2.start();
+    } catch (e) {
+      console.warn("Failed to start brake sound", e);
+    }
+  }
+
+  updateBrake(isBraking: boolean, brakeLevel: number, speed: number) {
+    if (!this.ctx) return;
+    
+    if (isBraking && speed > 0.5) {
+      // Lazy-start the brake nodes if not already running
+      if (!this.brakeOsc || !this.brakeGain) {
+        this.startBrake();
+        this.playAirBrakeSound(); // Play immediate air release sound
+      }
+
+      if (this.brakeGain) {
+        // Volume grows with brake notch level, but fades away as the train comes to a halt
+        const targetGain = this.isMuted 
+          ? 0 
+          : Math.min(0.012, 0.002 * brakeLevel * Math.min(1.0, speed / 30));
+        this.brakeGain.gain.setTargetAtTime(targetGain, this.ctx.currentTime, 0.12);
+        
+        if (this.brakeOsc && this.brakeOsc2) {
+          // Dynamic frequency oscillation to mimic authentic brake pads rubbing
+          const baseFreq = 2600 + Math.sin(this.ctx.currentTime * 24) * 80 + speed * 4;
+          this.brakeOsc.frequency.setTargetAtTime(baseFreq, this.ctx.currentTime, 0.08);
+          this.brakeOsc2.frequency.setTargetAtTime(baseFreq + 35, this.ctx.currentTime, 0.08);
+        }
+      }
+    } else {
+      if (this.brakeOsc || this.brakeGain) {
+        // Graceful fadeout when released
+        if (this.brakeGain) {
+          this.brakeGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.12);
+        }
+        setTimeout(() => {
+          this.stopBrake();
+        }, 150);
+      }
+    }
+  }
+
+  // Simulate compressed air release (psshhh!) when brakes are initially engaged
+  playAirBrakeSound() {
+    if (!this.ctx || this.isMuted) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(7500, now);
+      osc.frequency.exponentialRampToValueAtTime(700, now + 0.38);
+      
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = "highpass";
+      filter.frequency.setValueAtTime(1400, now);
+      
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+      
+      osc.start(now);
+      osc.stop(now + 0.45);
+    } catch (_) {}
+  }
+
+  stopBrake() {
+    try {
+      if (this.brakeOsc) { this.brakeOsc.stop(); this.brakeOsc.disconnect(); this.brakeOsc = null; }
+      if (this.brakeOsc2) { this.brakeOsc2.stop(); this.brakeOsc2.disconnect(); this.brakeOsc2 = null; }
+      if (this.brakeGain) { this.brakeGain.disconnect(); this.brakeGain = null; }
+    } catch (_) {}
+  }
+
   stopMotor() {
+    this.stopBrake(); // Clean up brake sound automatically whenever motor is cut off
     try {
       if (this.motorOsc1) { this.motorOsc1.stop(); this.motorOsc1.disconnect(); this.motorOsc1 = null; }
       if (this.motorOsc2) { this.motorOsc2.stop(); this.motorOsc2.disconnect(); this.motorOsc2 = null; }
@@ -337,6 +699,7 @@ class TrainAudioEngine {
   startBgm() {
     if (!this.ctx) return;
     this.stopBgm();
+    this.stopLobbyBgm();
 
     this.currentBgmStep = 0;
     const tempo = 145; // 145 BPM - high speed racing tempo!
@@ -351,14 +714,14 @@ class TrainAudioEngine {
     ];
 
     const melodies = [
-      // Am heroic theme
-      [440, 440, 493.88, 523.25, 0, 587.33, 659.25, 659.25, 587.33, 587.33, 523.25, 493.88, 440, 493.88, 523.25, 0],
+      // Am epic racing theme (highly synco-pated and cool minor progression)
+      [440, 523.25, 587.33, 659.25, 0, 659.25, 587.33, 523.25, 493.88, 0, 493.88, 523.25, 440, 0, 392, 440],
       // F drive theme
-      [523.25, 523.25, 587.33, 659.25, 0, 698.46, 783.99, 783.99, 698.46, 698.46, 659.25, 587.33, 523.25, 587.33, 659.25, 0],
+      [523.25, 587.33, 659.25, 698.46, 0, 698.46, 659.25, 587.33, 523.25, 0, 523.25, 587.33, 659.25, 0, 587.33, 523.25],
       // G epic build-up
-      [587.33, 587.33, 659.25, 698.46, 0, 783.99, 880, 880, 783.99, 783.99, 698.46, 659.25, 587.33, 659.25, 783.99, 0],
-      // E7 dramatic turn back to Am (using G# 830.61 Hz)
-      [659.25, 659.25, 698.46, 783.99, 0, 830.61, 987.77, 987.77, 830.61, 830.61, 783.99, 698.46, 659.25, 587.33, 493.88, 440]
+      [587.33, 659.25, 698.46, 783.99, 0, 783.99, 698.46, 659.25, 587.33, 0, 587.33, 659.25, 783.99, 0, 880, 783.99],
+      // E7 dramatic turn back to Am
+      [830.61, 880, 987.77, 1046.50, 0, 1046.50, 987.77, 880, 830.61, 0, 830.61, 783.99, 659.25, 0, 493.88, 440]
     ];
 
     const nextStep = () => {
@@ -443,13 +806,13 @@ class TrainAudioEngine {
         } catch (_) {}
       }
 
-      // --- 3. HEROIC LEAD MELODY ---
+      // --- 3. COOL brassy RESOCUT RETRO SAWTOOTH LEAD ---
       const melodyFreq = melodies[chordIndex][stepInMeasure];
       if (melodyFreq > 0) {
         try {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-          osc.type = "sine";
+          osc.type = "sawtooth"; // Cool brassy retro saw wave for epic arcade vibe
           
           osc.frequency.setValueAtTime(melodyFreq, now);
           
@@ -457,10 +820,16 @@ class TrainAudioEngine {
           osc.frequency.linearRampToValueAtTime(melodyFreq + 4, now + stepTime * 0.4);
           osc.frequency.linearRampToValueAtTime(melodyFreq - 4, now + stepTime * 0.8);
           
-          gain.gain.setValueAtTime(0.02, now);
+          gain.gain.setValueAtTime(0.018, now); // slightly lower to balance sawtooth brightness
           gain.gain.exponentialRampToValueAtTime(0.001, now + stepTime * 1.9);
           
-          osc.connect(gain);
+          const lpf = this.ctx.createBiquadFilter();
+          lpf.type = "lowpass";
+          lpf.frequency.setValueAtTime(1600, now); // Sweet resonant filter
+          lpf.Q.setValueAtTime(3.5, now); // Sharp analog bite
+          
+          osc.connect(lpf);
+          lpf.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start(now);
           osc.stop(now + stepTime * 1.95);
@@ -535,21 +904,221 @@ class TrainAudioEngine {
       this.bgmInterval = null;
     }
   }
+
+  // Cool, epic, adventure-themed synthesizer departure BGM loop (Heroic A-Minor arrangement)
+  startLobbyBgm() {
+    if (!this.ctx) return;
+    this.stopLobbyBgm();
+    this.stopBgm(); // make sure racing BGM is stopped
+
+    this.currentLobbyBgmStep = 0;
+    const tempo = 122; // 122 BPM - energetic driving tempo!
+    const stepTime = 60 / tempo / 4; // 16th note step duration (123ms)
+
+    // Epic Heroic vi-IV-V-I pop-anime progression
+    const lobbyChordNotes = [
+      [220.00, 261.63, 329.63, 440.00], // Am (A3, C4, E4, A4)
+      [174.61, 220.00, 261.63, 349.23], // F major (F3, A3, C4, F4)
+      [196.00, 246.94, 293.66, 392.00], // G major (G3, B3, D4, G4)
+      [261.63, 329.63, 392.00, 523.25], // C major (C4, E4, G4, C5)
+    ];
+
+    // Heroic, dramatic J-RPG style adventure melody
+    const lobbyMelodies = [
+      [440.00, 440.00, 493.88, 523.25, 0, 523.25, 587.33, 659.25, 659.25, 587.33, 523.25, 493.88, 440.00, 0, 392.00, 440.00], // Am section
+      [523.25, 523.25, 587.33, 659.25, 0, 659.25, 698.46, 783.99, 783.99, 698.46, 659.25, 587.33, 523.25, 0, 440.00, 523.25], // F section
+      [587.33, 587.33, 659.25, 698.46, 0, 698.46, 783.99, 880.00, 880.00, 783.99, 698.46, 659.25, 587.33, 0, 493.88, 587.33], // G section
+      [659.25, 0, 783.99, 0, 880.00, 0, 987.77, 0, 1046.50, 0, 987.77, 880.00, 783.99, 659.25, 523.25, 0]  // C section
+    ];
+
+    const nextLobbyStep = () => {
+      if (!this.ctx || this.isMuted) return;
+
+      const now = this.ctx.currentTime;
+      const measure = Math.floor(this.currentLobbyBgmStep / 16) % 4;
+      const stepInMeasure = this.currentLobbyBgmStep % 16;
+      const chordIndex = measure;
+
+      // --- 1. DRIVING EIGHTH-NOTE SYNTH BASS ---
+      if (stepInMeasure % 2 === 0) {
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "triangle"; // Deep, warm, analog-sounding triangle bass
+          
+          // Root note transposed down an octave for heavy sub-bass drive
+          const rootNote = lobbyChordNotes[chordIndex][0] / 2;
+          osc.frequency.setValueAtTime(rootNote, now);
+          
+          gain.gain.setValueAtTime(0.045, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + stepTime * 0.95);
+          
+          const lpf = this.ctx.createBiquadFilter();
+          lpf.type = "lowpass";
+          lpf.frequency.setValueAtTime(180, now); // Low cutoff to avoid muddy mids and keep bass punchy
+          
+          osc.connect(lpf);
+          lpf.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + stepTime * 0.98);
+        } catch (_) {}
+      }
+
+      // --- 2. COOL SYNTH PAD CHORD COMPING ---
+      if (stepInMeasure % 4 === 1 || stepInMeasure % 4 === 3) {
+        try {
+          const notes = lobbyChordNotes[chordIndex];
+          const gainNode = this.ctx.createGain();
+          gainNode.gain.setValueAtTime(0.01, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, now + stepTime * 1.5);
+          
+          const bpf = this.ctx.createBiquadFilter();
+          bpf.type = "bandpass";
+          bpf.frequency.setValueAtTime(500, now);
+          bpf.connect(this.ctx.destination);
+          gainNode.connect(bpf);
+
+          notes.forEach((freq) => {
+            if (!this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq, now);
+            osc.connect(gainNode);
+            osc.start(now);
+            osc.stop(now + stepTime * 1.6);
+          });
+        } catch (_) {}
+      }
+
+      // --- 3. COOL HEROIC FILTERED SAWTOOTH SYNTH LEAD ---
+      const melodyFreq = lobbyMelodies[chordIndex][stepInMeasure];
+      if (melodyFreq > 0) {
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          
+          // Cool filtered sawtooth wave for a brassy retro arcade aesthetic
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(melodyFreq, now);
+          
+          // Subtle professional pitch vibrato/glide
+          osc.frequency.linearRampToValueAtTime(melodyFreq + 4, now + stepTime * 0.3);
+          osc.frequency.linearRampToValueAtTime(melodyFreq - 2, now + stepTime * 0.75);
+          
+          gain.gain.setValueAtTime(0.018, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + stepTime * 2.1);
+          
+          const lpf = this.ctx.createBiquadFilter();
+          lpf.type = "lowpass";
+          lpf.frequency.setValueAtTime(1650, now); // Brighter cutoff for exciting retro arcade brassy vibe
+          lpf.Q.setValueAtTime(3.5, now); // Sharp analog resonant bite
+          
+          osc.connect(lpf);
+          lpf.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + stepTime * 2.2);
+        } catch (_) {}
+      }
+
+      // --- 4. SOLID RACING MARCH DRUMS (KICK, SNARE, HI-HAT) ---
+      if (stepInMeasure === 0 || stepInMeasure === 8) {
+        // Energetic Kick drum
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(110, now);
+          osc.frequency.exponentialRampToValueAtTime(45, now + 0.12);
+          
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.13);
+        } catch (_) {}
+      }
+      else if (stepInMeasure === 4 || stepInMeasure === 12) {
+        // Dynamic Snare drum
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.08);
+          
+          gain.gain.setValueAtTime(0.02, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        } catch (_) {}
+      }
+      else if (stepInMeasure % 2 === 1) {
+        // High quality Closed Hi-Hat ticker
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(6500, now);
+          
+          gain.gain.setValueAtTime(0.006, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+          
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        } catch (_) {}
+      }
+
+      this.currentLobbyBgmStep++;
+    };
+
+    this.lobbyBgmInterval = setInterval(nextLobbyStep, stepTime * 1000);
+  }
+
+  stopLobbyBgm() {
+    if (this.lobbyBgmInterval) {
+      clearInterval(this.lobbyBgmInterval);
+      this.lobbyBgmInterval = null;
+    }
+  }
 }
 
 export default function App() {
   // Navigation / App State
   const [activeScreen, setActiveScreen] = useState<"lobby" | "matchmaking" | "racing" | "completed">("lobby");
   const [activeModal, setActiveModal] = useState<"none" | "game_start" | "stage_select" | "train_select" | "ranking" | "options" | "news" | "how_to_play" | "train_encyclopedia">("none");
-  const [selectedEncyTrain, setSelectedEncyTrain] = useState<"yamanote" | "chuo" | "shonan">("yamanote");
+  const [selectedEncyTrain, setSelectedEncyTrain] = useState<"yamanote" | "chuo" | "shonan" | "yokosuka" | "sobukanko" | "keiyo">("yamanote");
   const [nickname, setNickname] = useState("新米運転士");
-  const [selectedLine, setSelectedLine] = useState<'yamanote' | 'chuo' | 'shonan'>('shonan');
-  const [acquiredTrains, setAcquiredTrains] = useState<('yamanote' | 'chuo' | 'shonan')[]>(['shonan']);
+  const [selectedLine, setSelectedLine] = useState<'yamanote' | 'chuo' | 'shonan' | 'yokosuka' | 'sobukanko' | 'keiyo'>('shonan');
+  const [acquiredTrains, setAcquiredTrains] = useState<('yamanote' | 'chuo' | 'shonan' | 'yokosuka' | 'sobukanko' | 'keiyo')[]>(['shonan']);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isMuted, setIsMuted] = useState(false);
   const [isLobbyStarted, setIsLobbyStarted] = useState(false);
+  const [isSoundActive, setIsSoundActive] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [loadingMessage, setLoadingMessage] = useState<string>("路線データ読込中...");
+  const [lobbyWeather, setLobbyWeather] = useState<"sunny" | "foggy" | "rainy" | "heavy_rain">("sunny");
+
+  // Dynamically rotate lobby weather for gorgeous initial screen effects
+  useEffect(() => {
+    if (activeScreen === "lobby") {
+      const weathers: ("sunny" | "foggy" | "rainy" | "heavy_rain")[] = ["sunny", "foggy", "rainy", "heavy_rain"];
+      let idx = 0;
+      const interval = setInterval(() => {
+        idx = (idx + 1) % weathers.length;
+        setLobbyWeather(weathers[idx]);
+      }, 7000); // Rotate weather every 7 seconds for dynamic splash preview
+      return () => clearInterval(interval);
+    }
+  }, [activeScreen]);
   const transparentLogo = useTransparentImage(titleLogoUrl);
 
   const [currentStationIdx, setCurrentStationIdx] = useState(0);
@@ -560,16 +1129,36 @@ export default function App() {
   useEffect(() => {
     const handleGlobalKey = (e: KeyboardEvent) => {
       if (activeScreen === "lobby" && !isLobbyStarted) {
-        if (e.key === " " || e.key === "Spacebar") {
+        if (e.key === " " || e.key === "Spacebar" || e.key === "Enter") {
           e.preventDefault();
-          setIsLobbyStarted(true);
-          playSynthSound("chime");
+          if (!isSoundActive) {
+            try {
+              if (!audioCtxRef.current) {
+                audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+              }
+              const ctx = audioCtxRef.current;
+              if (ctx.state === "suspended") {
+                ctx.resume();
+              }
+              if (!audioEngineRef.current) {
+                audioEngineRef.current = new TrainAudioEngine();
+                audioEngineRef.current.init(ctx);
+              }
+              audioEngineRef.current.setMuted(isMuted);
+              audioEngineRef.current.startLobbyBgm();
+              setIsSoundActive(true);
+              playSynthSound("chime");
+            } catch (_) {}
+          } else {
+            setIsLobbyStarted(true);
+            playSynthSound("beep");
+          }
         }
       }
     };
     window.addEventListener("keydown", handleGlobalKey);
     return () => window.removeEventListener("keydown", handleGlobalKey);
-  }, [activeScreen, isLobbyStarted]);
+  }, [activeScreen, isLobbyStarted, isSoundActive, isMuted]);
 
   // Global keyboard listener for active train racing gameplay (W/S & Arrow keys & Space)
   useEffect(() => {
@@ -628,6 +1217,35 @@ export default function App() {
     }
   }, [isMuted]);
 
+  // Manage Lobby BGM loop based on active screen and boot status
+  useEffect(() => {
+    if ((isLobbyStarted || isSoundActive) && activeScreen === "lobby") {
+      try {
+        if (!audioCtxRef.current) {
+          audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        const ctx = audioCtxRef.current;
+        if (ctx.state === "suspended") {
+          ctx.resume();
+        }
+        if (!audioEngineRef.current) {
+          audioEngineRef.current = new TrainAudioEngine();
+          audioEngineRef.current.init(ctx);
+        }
+        audioEngineRef.current.setMuted(isMuted);
+        audioEngineRef.current.startLobbyBgm();
+      } catch (e) {
+        console.warn("Failed to start Lobby BGM:", e);
+      }
+    } else {
+      audioEngineRef.current?.stopLobbyBgm();
+    }
+
+    return () => {
+      audioEngineRef.current?.stopLobbyBgm();
+    };
+  }, [isLobbyStarted, isSoundActive, activeScreen, isMuted]);
+
   // Sound Synth Helper
   const playSynthSound = (type: "beep" | "chime" | "derail" | "buzzer" | "boost") => {
     if (isMuted) return;
@@ -648,8 +1266,8 @@ export default function App() {
       if (type === "beep") {
         osc.type = "sine";
         osc.frequency.setValueAtTime(880, ctx.currentTime);
-        gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.04, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
         osc.start();
         osc.stop(ctx.currentTime + 0.15);
       } else if (type === "chime") {
@@ -658,31 +1276,31 @@ export default function App() {
         osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
         osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.12); // E5
         osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.24); // G5
-        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+        gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
         osc.start();
         osc.stop(ctx.currentTime + 0.45);
       } else if (type === "derail") {
         osc.type = "sawtooth";
         osc.frequency.setValueAtTime(120, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.6);
-        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+        gainNode.gain.setValueAtTime(0.08, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
         osc.start();
         osc.stop(ctx.currentTime + 0.65);
       } else if (type === "buzzer") {
         osc.type = "square";
         osc.frequency.setValueAtTime(220, ctx.currentTime);
-        gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        gainNode.gain.setValueAtTime(0.02, ctx.currentTime); // Soft and gentle volume
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
         osc.start();
-        osc.stop(ctx.currentTime + 0.35);
+        osc.stop(ctx.currentTime + 0.3);
       } else if (type === "boost") {
         osc.type = "sine";
         osc.frequency.setValueAtTime(440, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.4);
-        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+        gainNode.gain.setValueAtTime(0.04, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
         osc.start();
         osc.stop(ctx.currentTime + 0.45);
       }
@@ -725,6 +1343,8 @@ export default function App() {
   // Solo time attack & speed limit penalty states
   const [speedPenaltyTimeLeft, setSpeedPenaltyTimeLeft] = useState(0);
   const [mySpeedViolationsCount, setMySpeedViolationsCount] = useState(0);
+  const [timePenaltyMs, setTimePenaltyMs] = useState(0);
+  const [timeBonusMs, setTimeBonusMs] = useState(0);
 
   // Pausable intermediate station stops tracking
   const pausedTimeMsRef = useRef<number>(0);
@@ -740,6 +1360,8 @@ export default function App() {
   const currentFeaturesRef = useRef<TrackFeature[]>([]);
   const cpuPersonalityRef = useRef<"aggressive" | "steady" | "speedster">("steady");
   const stationStoppedRef = useRef<boolean>(false);
+  const timePenaltyMsRef = useRef<number>(0);
+  const timeBonusMsRef = useRef<number>(0);
 
   // Standard Local Refs for ultra-precise, high-frequency physical 60fps simulation loops
   const myPositionRef = useRef(0);
@@ -830,6 +1452,10 @@ export default function App() {
     boardingTimeLeftRef.current = 0;
     speedBoostActiveRef.current = false;
     stationStoppedRef.current = false;
+    timePenaltyMsRef.current = 0;
+    setTimePenaltyMs(0);
+    timeBonusMsRef.current = 0;
+    setTimeBonusMs(0);
 
     // Pick random CPU driving personality
     const personalities: ("aggressive" | "steady" | "speedster")[] = ["aggressive", "steady", "speedster"];
@@ -1110,6 +1736,62 @@ export default function App() {
     setActiveScreen("lobby");
   };
 
+  // Replay the current stage immediately
+  const handleReplayRace = async () => {
+    if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
+    if (syncIntervalIdRef.current) clearInterval(syncIntervalIdRef.current);
+    if (lobbyPollIdRef.current) clearInterval(lobbyPollIdRef.current);
+
+    audioEngineRef.current?.stopBgm();
+    audioEngineRef.current?.stopMotor();
+
+    if (roomId && playerId) {
+      try {
+        await fetch(`/api/rooms/${roomId}/leave`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ playerId }),
+        });
+      } catch (_) {}
+    }
+
+    setPlayerId(null);
+    setRoomId(null);
+    setRoom(null);
+    resetLocalPhysics();
+    
+    // Restart with same selectedLine
+    handleJoinQueue();
+  };
+
+  // Return to the stage and train selection screen
+  const handleBackToSelection = async () => {
+    if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
+    if (syncIntervalIdRef.current) clearInterval(syncIntervalIdRef.current);
+    if (lobbyPollIdRef.current) clearInterval(lobbyPollIdRef.current);
+
+    audioEngineRef.current?.stopBgm();
+    audioEngineRef.current?.stopMotor();
+
+    if (roomId && playerId) {
+      try {
+        await fetch(`/api/rooms/${roomId}/leave`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ playerId }),
+        });
+      } catch (_) {}
+    }
+
+    setPlayerId(null);
+    setRoomId(null);
+    setRoom(null);
+    resetLocalPhysics();
+    setIsLobbyStarted(true);
+    setActiveScreen("lobby");
+    setActiveModal("game_start");
+  };
+
   // CPU Drive Strategy Brain
   const updateCpuDriverSim = (dt: number, trackFeatures: TrackFeature[]) => {
     if (cpuFinishedRef.current) return;
@@ -1367,6 +2049,7 @@ export default function App() {
       lastTime = time;
 
       const now = Date.now();
+      const rainIntensity = getRainIntensity(myPositionRef.current, activeLineRef.current, activeRoom?.id);
       const elapsedSec = raceStartTimeRef.current ? (now - raceStartTimeRef.current) / 1000 : 0;
 
       // Only simulate physics once countdown has resolved
@@ -1374,6 +2057,16 @@ export default function App() {
         // Synthesizer real-time audio modulation updates
         if (audioEngineRef.current) {
           audioEngineRef.current.updateMotor(mySpeedRef.current);
+
+          const mascon = myMasconRef.current;
+          const isBraking = mascon.startsWith("B") || mascon === "EB";
+          let brakeLevel = 0;
+          if (mascon === "B1") brakeLevel = 1;
+          else if (mascon === "B2") brakeLevel = 2;
+          else if (mascon === "B3") brakeLevel = 3;
+          else if (mascon === "EB") brakeLevel = 4;
+
+          audioEngineRef.current.updateBrake(isBraking, brakeLevel, mySpeedRef.current);
         }
 
         // Play physical railway joints sound based on distance travelled
@@ -1424,7 +2117,7 @@ export default function App() {
             if (isTerminal) {
               // Stopped at terminal station! Game is finished successfully!
               myFinishedRef.current = true;
-              const finalTimeMs = raceStartTimeRef.current ? (Date.now() - raceStartTimeRef.current - pausedTimeMsRef.current) : 0;
+              const finalTimeMs = raceStartTimeRef.current ? (Date.now() - raceStartTimeRef.current - pausedTimeMsRef.current + timePenaltyMsRef.current - timeBonusMsRef.current) : 0;
               myFinishTimeRef.current = finalTimeMs;
               playSynthSound("chime");
               audioEngineRef.current?.stopBgm();
@@ -1491,6 +2184,15 @@ export default function App() {
             } else if (notch === "EB") {
               accelForce = -9.2;
             }
+
+            // Apply slippery track physics during rain (up to 25% acceleration slip and 30% brake sliding)
+            if (rainIntensity > 0) {
+              if (notch.startsWith("P")) {
+                accelForce *= (1 - 0.25 * rainIntensity);
+              } else if (notch.startsWith("B") || notch === "EB") {
+                accelForce *= (1 - 0.3 * rainIntensity);
+              }
+            }
           }
 
           // Aerodynamic resistance and friction
@@ -1507,6 +2209,9 @@ export default function App() {
 
         // 4. SIGNAL BLOCKS & SPEED LIMIT CROSS-CHECKS
         let currentAtcLimit = 130;
+        if (rainIntensity > 0.5) {
+          currentAtcLimit = 120; // Reduce base speed limit to 120km/h under heavy rain
+        }
         let warningText = "";
         let riskValue = 0;
 
@@ -1521,9 +2226,14 @@ export default function App() {
           if (feat.type === "speed_limit") {
             const insideLimit = myPositionRef.current >= feat.position && myPositionRef.current <= feat.position + feat.length;
             if (insideLimit) {
-              currentAtcLimit = feat.value;
-              if (mySpeedRef.current > feat.value) {
-                speedLimitWarning = `⚠️ 速度超過！ 制限速度 ${feat.value}km/h`;
+              let adjustedLimit = feat.value;
+              if (rainIntensity > 0.5) {
+                adjustedLimit = Math.max(30, feat.value - 10); // Reduce curves/speed limits by 10km/h under rain
+              }
+              currentAtcLimit = adjustedLimit;
+
+              if (mySpeedRef.current > adjustedLimit) {
+                speedLimitWarning = `⚠️ 速度超過！ 制限速度 ${adjustedLimit}km/h`;
                 if (speedPenaltyTimeLeftRef.current <= 0) {
                   // Trigger 5-second speed limit violation penalty!
                   speedPenaltyTimeLeftRef.current = 5.0;
@@ -1538,7 +2248,11 @@ export default function App() {
               // Approaching limit early warning check within 200m
               const distToLimit = feat.position - myPositionRef.current;
               if (distToLimit > 0 && distToLimit <= 200) {
-                const text = `📢 予告：前方 ${Math.round(distToLimit)}m 先に制限 ${feat.value}km/h (${feat.label || "速度制限"})`;
+                let adjustedApproachLimit = feat.value;
+                if (rainIntensity > 0.5) {
+                  adjustedApproachLimit = Math.max(30, feat.value - 10);
+                }
+                const text = `📢 予告：前方 ${Math.round(distToLimit)}m 先に制限 ${adjustedApproachLimit}km/h (${feat.label || "速度制限"})`;
                 if (!approachingWarning) {
                   approachingWarning = text;
                 }
@@ -1578,6 +2292,29 @@ export default function App() {
           }
         }
 
+        // 雨天安全運転ボーナス (Rain Speed recommendation reward checks)
+        if (rainIntensity > 0) {
+          const lowerLimit = Math.max(30, currentAtcLimit - 30);
+          const upperLimit = Math.max(40, currentAtcLimit - 10);
+          const isWithinRecommended = mySpeedRef.current >= lowerLimit && mySpeedRef.current <= upperLimit;
+          
+          if (isWithinRecommended) {
+            // Keep increasing bonus up to 10 seconds (10000ms) maximum
+            if (timeBonusMsRef.current < 10000) {
+              const addMs = dt * 2000; // 1 second of safe driving reduces final time by 2.0 seconds
+              timeBonusMsRef.current = Math.min(10000, timeBonusMsRef.current + addMs);
+              setTimeBonusMs(Math.round(timeBonusMsRef.current));
+            }
+          }
+
+          // HUD status warning updates
+          if (isWithinRecommended) {
+            warningText = `☔ 雨天適正速度維持中！タイムボーナス獲得中 (獲得: ${((timeBonusMsRef.current)/1000).toFixed(1)}s / 10s)`;
+          } else {
+            warningText = `☔ 雨天スリップ注意！推奨速度: ${lowerLimit}〜${upperLimit}km/h で走行するとタイムボーナス`;
+          }
+        }
+
         // 5. JAPANESE STATION STOP CHALLENGE
         if (myPositionRef.current >= cfg.stationStart && myPositionRef.current <= cfg.stationEnd && !stationStoppedRef.current && !myStationCompletedRef.current) {
           const deltaStopM = cfg.stationStop - myPositionRef.current;
@@ -1596,8 +2333,14 @@ export default function App() {
           stationStoppedRef.current = true;
           setStationStopped(true);
           myStationCompletedRef.current = true;
-          setStationGrade("🚨 オーバーラン！ 🚨");
-          setStationMsg("停車位置を大幅に超過しました。乗客苦情のため 5.0秒間加速・出力ペナルティ！");
+
+          const overrunMeters = myPositionRef.current - cfg.stationStop;
+          const penaltyMs = overrunMeters * 1000;
+          timePenaltyMsRef.current += penaltyMs;
+          setTimePenaltyMs(timePenaltyMsRef.current);
+
+          setStationGrade(`🚨 非常事態！駅通過オーバーラン (+${overrunMeters.toFixed(2)}m超過) 🚨`);
+          setStationMsg(`駅を完全に通過してしまいました！ペナルティとしてタイムに +${overrunMeters.toFixed(1)}秒 加算されました！ 5.0秒間加速・出力ペナルティ！`);
           setAtcWarning("ペナルティ！出力制限中");
           myOverheatRef.current = 80;
           setBoardingTimeLeft(5.0);
@@ -1610,7 +2353,7 @@ export default function App() {
           myPositionRef.current = cfg.trackLength;
           mySpeedRef.current = 0;
           myFinishedRef.current = true;
-          const finalTimeMs = raceStartTimeRef.current ? (Date.now() - raceStartTimeRef.current - pausedTimeMsRef.current) : 0;
+          const finalTimeMs = raceStartTimeRef.current ? (Date.now() - raceStartTimeRef.current - pausedTimeMsRef.current + timePenaltyMsRef.current - timeBonusMsRef.current) : 0;
           myFinishTimeRef.current = finalTimeMs;
           playSynthSound("chime");
           
@@ -1677,29 +2420,43 @@ export default function App() {
   const playHTMLStationStop = (delta: number) => {
     const accuracy = Math.abs(delta); // offset in meters
 
-    if (accuracy <= 1.5) {
-      setStationGrade("💮 停車エクセレント！ (+0.0m) 💮");
-      setStationMsg("完璧な位置に停車しました！ モーター排熱完了＆加速ブースト15秒間獲得！");
-      myOverheatRef.current = 0; // reset heat
-      setSpeedBoostActive(true);
-      speedBoostActiveRef.current = true;
-      setBoostTimer(15.0); // 15s speed buff!
-      setBoardingTimeLeft(3.0); // standard boarding wait
-      boardingTimeLeftRef.current = 3.0;
-      playSynthSound("chime");
-      playSynthSound("boost");
-    } else if (accuracy <= 4.0) {
-      setStationGrade("👍 停車グッド！ 👍");
-      setStationMsg("良好な位置です。安全に乗客扱中（待ち時間3.5秒）");
-      setBoardingTimeLeft(3.5);
-      boardingTimeLeftRef.current = 3.5;
-      playSynthSound("chime");
-    } else {
-      setStationGrade("⚠️ 停車バッド (ズレ大) ⚠️ ");
-      setStationMsg("位置がずれています。乗降に時間がかかります。（待ち時間5.0秒）");
+    if (delta < -0.1) {
+      // OVERRUN PENALTY CASE! (Stopped past target point)
+      const penaltyMs = accuracy * 1000; // 1.0 second per 1.0 meter
+      timePenaltyMsRef.current += penaltyMs;
+      setTimePenaltyMs(timePenaltyMsRef.current);
+
+      setStationGrade(`🚨 オーバーラン！ (+${accuracy.toFixed(2)}m超過) 🚨`);
+      setStationMsg(`停止位置をオーバーランしました。ペナルティとしてタイムに +${accuracy.toFixed(1)}秒 加算されました！`);
       setBoardingTimeLeft(5.0);
       boardingTimeLeftRef.current = 5.0;
       playSynthSound("buzzer");
+    } else {
+      // SHORT STOP OR PERFECT STOP CASES!
+      if (accuracy <= 1.5) {
+        setStationGrade("💮 停車エクセレント！ (+0.0m) 💮");
+        setStationMsg("完璧な位置に停車しました！ モーター排熱完了＆加速ブースト15秒間獲得！");
+        myOverheatRef.current = 0; // reset heat
+        setSpeedBoostActive(true);
+        speedBoostActiveRef.current = true;
+        setBoostTimer(15.0); // 15s speed buff!
+        setBoardingTimeLeft(3.0); // standard boarding wait
+        boardingTimeLeftRef.current = 3.0;
+        playSynthSound("chime");
+        playSynthSound("boost");
+      } else if (accuracy <= 4.0) {
+        setStationGrade("👍 停車グッド！ 👍");
+        setStationMsg(`良好な位置です（手前ズレ ${accuracy.toFixed(2)}m）。安全に乗客扱中（待ち時間3.5秒）`);
+        setBoardingTimeLeft(3.5);
+        boardingTimeLeftRef.current = 3.5;
+        playSynthSound("chime");
+      } else {
+        setStationGrade("⚠️ 停車バッド (手前ズレ大) ⚠️ ");
+        setStationMsg(`停止位置に届きませんでした（手前ズレ ${accuracy.toFixed(2)}m）。乗客乗降に時間がかかります。（待ち時間5.0秒）`);
+        setBoardingTimeLeft(5.0);
+        boardingTimeLeftRef.current = 5.0;
+        playSynthSound("buzzer");
+      }
     }
   };
 
@@ -1800,15 +2557,39 @@ export default function App() {
         <main 
           onClick={() => {
             if (!isLobbyStarted) {
-              setIsLobbyStarted(true);
-              playSynthSound("chime");
+              if (!isSoundActive) {
+                try {
+                  if (!audioCtxRef.current) {
+                    audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+                  }
+                  const ctx = audioCtxRef.current;
+                  if (ctx.state === "suspended") {
+                    ctx.resume();
+                  }
+                  if (!audioEngineRef.current) {
+                    audioEngineRef.current = new TrainAudioEngine();
+                    audioEngineRef.current.init(ctx);
+                  }
+                  audioEngineRef.current.setMuted(isMuted);
+                  audioEngineRef.current.startLobbyBgm();
+                  setIsSoundActive(true);
+                  playSynthSound("chime");
+                } catch (_) {}
+              } else {
+                setIsLobbyStarted(true);
+                playSynthSound("beep");
+              }
             }
           }}
           className={`flex-1 relative overflow-hidden flex flex-col justify-between p-6 md:p-12 transition-all duration-700 ${!isLobbyStarted ? 'cursor-pointer' : ''}`}
         >
           {/* Background Image Container with advanced brightness styling */}
           <div 
-            className="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-120"
+            className={`absolute inset-0 bg-cover bg-center transition-all duration-700 ${
+              lobbyWeather === "sunny" ? "brightness-120" :
+              lobbyWeather === "foggy" ? "brightness-95 saturate-75" :
+              "brightness-80 saturate-90"
+            }`}
             style={{
               backgroundImage: `url("${lobbyBgUrl}")`,
             }}
@@ -1816,6 +2597,19 @@ export default function App() {
 
           {/* Minimal overlay backdrop to maintain rich colors while ensuring UI legibility */}
           <div className="absolute inset-0 bg-slate-950/15 pointer-events-none" />
+
+          {/* Lobby Weather Effects Overlay (霧と雨のエフェクトをロビーにも挿入) */}
+          {lobbyWeather === "foggy" && (
+            <div className="absolute inset-0 pointer-events-none z-10 transition-opacity duration-1000">
+              {/* Fog Layer 1 */}
+              <div className="absolute inset-x-0 top-0 h-full opacity-45 bg-fog-pattern1 animate-fog1 pointer-events-none" />
+              {/* Fog Layer 2 */}
+              <div className="absolute inset-x-0 top-0 h-full opacity-35 bg-fog-pattern2 animate-fog2 pointer-events-none" />
+            </div>
+          )}
+          {(lobbyWeather === "rainy" || lobbyWeather === "heavy_rain") && (
+            <div className={`absolute inset-0 pointer-events-none z-10 transition-opacity duration-1000 ${lobbyWeather === "heavy_rain" ? 'animate-rain-heavy bg-slate-900/10' : 'animate-rain-fast'}`} />
+          )}
 
           {!isLobbyStarted ? (
             /* --- SPLASH PRE-START STATE --- */
@@ -1846,23 +2640,57 @@ export default function App() {
 
               {/* Blink trigger text */}
               <div className="space-y-6 flex flex-col items-center">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsLobbyStarted(true);
-                    playSynthSound("chime");
-                  }}
-                  className="group relative h-16 w-80 sm:w-96 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 border-2 border-yellow-350 text-slate-950 font-sans font-extrabold text-2xl rounded-2xl shadow-[0_12px_40px_rgba(234,179,8,0.5)] flex items-center justify-center gap-4 cursor-pointer transform -skew-x-6 transition-all duration-200 hover:scale-105 hover:brightness-110 active:scale-95 shadow-yellow-500/25 z-20"
-                >
-                  <div className="transform skew-x-6 flex items-center gap-3">
-                    <span className="text-3xl animate-bounce">🎮</span>
-                    <span className="tracking-widest text-slate-950 font-black">システム起動 / ENTER SYSTEM</span>
-                  </div>
-                </button>
+                {!isSoundActive ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      try {
+                        if (!audioCtxRef.current) {
+                          audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+                        }
+                        const ctx = audioCtxRef.current;
+                        if (ctx.state === "suspended") {
+                          ctx.resume();
+                        }
+                        if (!audioEngineRef.current) {
+                          audioEngineRef.current = new TrainAudioEngine();
+                          audioEngineRef.current.init(ctx);
+                        }
+                        audioEngineRef.current.setMuted(isMuted);
+                        audioEngineRef.current.startLobbyBgm();
+                        setIsSoundActive(true);
+                        playSynthSound("chime");
+                      } catch (_) {}
+                    }}
+                    className="group relative h-16 w-80 sm:w-96 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 border-2 border-emerald-300 text-slate-950 font-sans font-extrabold text-2xl rounded-2xl shadow-[0_12px_40px_rgba(16,185,129,0.5)] flex items-center justify-center gap-4 cursor-pointer transform -skew-x-6 transition-all duration-200 hover:scale-105 hover:brightness-110 active:scale-95 shadow-teal-500/25 z-20"
+                  >
+                    <div className="transform skew-x-6 flex items-center gap-3">
+                      <span className="text-3xl animate-pulse">🔊</span>
+                      <span className="tracking-widest text-slate-950 font-black">サウンド再生 / BGM ON</span>
+                    </div>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsLobbyStarted(true);
+                      playSynthSound("beep");
+                    }}
+                    className="group relative h-16 w-80 sm:w-96 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 border-2 border-yellow-350 text-slate-950 font-sans font-extrabold text-2xl rounded-2xl shadow-[0_12px_40px_rgba(234,179,8,0.5)] flex items-center justify-center gap-4 cursor-pointer transform -skew-x-6 transition-all duration-200 hover:scale-105 hover:brightness-110 active:scale-95 shadow-yellow-500/25 z-20"
+                  >
+                    <div className="transform skew-x-6 flex items-center gap-3">
+                      <span className="text-3xl animate-bounce">🚉</span>
+                      <span className="tracking-widest text-slate-950 font-black">システム起動 / START GAME</span>
+                    </div>
+                  </button>
+                )}
                 
                 <div className="text-xs md:text-sm text-slate-400 font-bold tracking-widest bg-slate-950/85 px-4 py-2 rounded-xl border border-slate-800 shadow-md">
-                  スペースキー または 画面をタップしてシステム起動
+                  {!isSoundActive 
+                    ? "画面をタップ、または「BGM ON」を押してBGM再生を開始！" 
+                    : "スペースキー または「START GAME」を押して運転指令室へ"}
                 </div>
               </div>
 
@@ -1884,6 +2712,15 @@ export default function App() {
                 
                 {/* Accent Indicators */}
                 <div className="flex flex-col items-start gap-2">
+                  {/* Lobby Weather Ticker Badge (ロビー天候モニター) */}
+                  <div className="flex items-center gap-2 bg-slate-900/95 border-2 border-slate-700/85 rounded-xl px-4 py-2 text-xs font-bold text-slate-100 shadow-xl tracking-wider">
+                    <span className="text-slate-400">🌍 沿線天候指令モニター:</span>
+                    {lobbyWeather === "sunny" && <span className="text-yellow-400 font-extrabold flex items-center gap-1">晴天 ☀️</span>}
+                    {lobbyWeather === "foggy" && <span className="text-slate-300 font-extrabold flex items-center gap-1 animate-pulse">濃霧発生 🌫️</span>}
+                    {lobbyWeather === "rainy" && <span className="text-blue-400 font-extrabold flex items-center gap-1 animate-pulse">雨天 ☔</span>}
+                    {lobbyWeather === "heavy_rain" && <span className="text-indigo-400 font-extrabold flex items-center gap-1 animate-pulse">豪雨 ⛈️ (粘着低下注意)</span>}
+                  </div>
+
                   <div className="flex items-center gap-4 bg-slate-900/90 border-2 border-yellow-500 rounded-xl px-5 py-3 shadow-2xl">
                     <div className="flex -space-x-1">
                       <div className="w-4 h-8 bg-slate-100 transform -skew-x-12"></div>
@@ -2059,7 +2896,7 @@ export default function App() {
                           <label className="block text-sm font-mono font-black text-emerald-400 tracking-wider">
                             SELECT LINE & TRAIN / 運行路線・車両選択
                           </label>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             {[
                               {
                                 id: 'shonan',
@@ -2087,6 +2924,33 @@ export default function App() {
                                 length: '18000m',
                                 target: '850.0秒',
                                 activeColor: 'bg-red-950/40 border-red-500 text-red-300 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+                              },
+                              {
+                                id: 'yokosuka',
+                                name: '横須賀線',
+                                desc: 'E217系 (スカ色)',
+                                details: '全5駅（鎌倉まで）の山海の風情漂う路線。高速のトンネル区間とカーブ制限を制して定時運行を目指そう！',
+                                length: '21000m',
+                                target: '980.0秒',
+                                activeColor: 'bg-blue-950/40 border-blue-500 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
+                              },
+                              {
+                                id: 'sobukanko',
+                                name: '総武緩行線',
+                                desc: 'E231系500番台 (総武色)',
+                                details: '全5駅（新小岩まで）の下町各駅停車。緩急をつけたブレーキ操作で美しい停止を心がけよう！',
+                                length: '13500m',
+                                target: '680.0秒',
+                                activeColor: 'bg-yellow-950/40 border-yellow-500 text-yellow-300 shadow-[0_0_15px_rgba(234,179,8,0.2)]'
+                              },
+                              {
+                                id: 'keiyo',
+                                name: '京葉線',
+                                desc: 'E233系5000番台 (京葉色)',
+                                details: '全5駅（舞浜まで）のウォーターフロント高架。最高時速100キロ超で湾岸を豪快に駆け抜けよう！',
+                                length: '18000m',
+                                target: '880.0秒',
+                                activeColor: 'bg-rose-950/40 border-rose-500 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.2)]'
                               }
                             ].map((item) => (
                               <button
@@ -2153,6 +3017,9 @@ export default function App() {
                             {selectedLine === 'shonan' && "【E231系】 湘南新宿ライン、上野東京ライン等で長年に渡り活躍する中距離快速。長い編成と加速した際のモーター唸り音が魅力。"}
                             {selectedLine === 'yamanote' && "【E235系】 現在の山手線の顔であり、正面がスマートフォンを彷彿とさせる未来的デザイン。高密度のATC加減速を得意とする。"}
                             {selectedLine === 'chuo' && "【E233系】 中央特快として、高出力モーターにより一気に時速100キロ以上に到達する頼もしきオレンジの韋駄天。"}
+                            {selectedLine === 'yokosuka' && "【E217系】 横須賀・総武快速線で長年活躍した名車。重厚な2階建てグリーン車や特徴的なVVVF変調音が鉄道ファンを魅了する。"}
+                            {selectedLine === 'sobukanko' && "【E231系500番台】 黄色い帯をまとった総武線各駅停車の主力車両。山手線から転属し、高密度な運行を安定して支え続ける。"}
+                            {selectedLine === 'keiyo' && "【E233系5000番台】 東京と千葉を結ぶ、赤い帯が特徴の京葉線快速車。潮風香る東京湾岸沿いを最高時速110キロで駆け抜ける。"}
                           </div>
                         </div>
                     )}
@@ -2165,7 +3032,7 @@ export default function App() {
                         </p>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          {(['shonan', 'yamanote', 'chuo'] as const).map((line) => (
+                          {(['shonan', 'yamanote', 'chuo', 'yokosuka', 'sobukanko', 'keiyo'] as const).map((line) => (
                             <div
                               key={line}
                               className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 ${
@@ -2177,8 +3044,13 @@ export default function App() {
                               <span className="text-3xl">
                                 {acquiredTrains.includes(line) ? '✅' : '🔒'}
                               </span>
-                              <span className="text-xs font-black text-slate-200">
-                                {line === 'shonan' ? '湘南新宿 E231' : line === 'yamanote' ? '山手線 E235' : '中央快速 E233'}
+                              <span className="text-xs font-black text-slate-200 text-center">
+                                {line === 'shonan' && '湘南新宿 E231'}
+                                {line === 'yamanote' && '山手線 E235'}
+                                {line === 'chuo' && '中央快速 E233'}
+                                {line === 'yokosuka' && '横須賀線 E217'}
+                                {line === 'sobukanko' && '総武緩行 E231-500'}
+                                {line === 'keiyo' && '京葉線 E233-5000'}
                               </span>
                             </div>
                           ))}
@@ -2530,7 +3402,12 @@ export default function App() {
                   運行路線ダイヤ 調整中
                 </h3>
                 <p className="text-xs text-slate-400 font-mono">
-                  {selectedLine === 'yamanote' ? "山手線ダイヤ (恵比寿駅停車)" : selectedLine === 'chuo' ? "中央快速線ダイヤ (三鷹駅停車)" : "湘南新宿ラインダイヤ (湘南大磯駅停車)"} を構成中...
+                  {selectedLine === 'yamanote' && "山手線ダイヤ (恵比寿駅停車)"}
+                  {selectedLine === 'chuo' && "中央快速線ダイヤ (三鷹駅停車)"}
+                  {selectedLine === 'shonan' && "湘南新宿ラインダイヤ (湘南大磯駅停車)"}
+                  {selectedLine === 'yokosuka' && "横須賀線ダイヤ (武蔵小杉駅停車)"}
+                  {selectedLine === 'sobukanko' && "総武緩行線ダイヤ (浅草橋駅停車)"}
+                  {selectedLine === 'keiyo' && "京葉線ダイヤ (八丁堀駅停車)"} を構成中...
                 </p>
               </div>
             </div>
@@ -2650,61 +3527,110 @@ export default function App() {
                     <span className="text-emerald-400 font-bold">🚉 {cfg.stationLabel}停車 ( {cfg.stationStart}〜{cfg.stationEnd}m )</span>
                     <span>終点駅 ({dynamicTrackLength}m)</span>
                   </div>
-                  <div className="relative bg-slate-950 h-5 border-2 border-slate-800 rounded-lg overflow-hidden flex items-center">
-                    {/* Station Zone anchor on physical map bar */}
-                    <div 
-                      className="absolute bg-emerald-500/20 shadow-[0_0_8px_rgba(16,185,129,0.3)] border-x border-emerald-500/50 h-full text-[9px] text-emerald-300/80 font-mono font-bold flex items-center justify-center animate-pulse"
-                      style={{
-                        left: `${(cfg.stationStart / dynamicTrackLength) * 100}%`,
-                        width: `${((cfg.stationEnd - cfg.stationStart) / dynamicTrackLength) * 100}%`
-                      }}
-                    >
-                      STATION
-                    </div>
+                  <div className="relative bg-slate-950 h-6 border-2 border-slate-800 rounded-lg overflow-visible flex items-center mb-5 mt-4">
+                    {/* 1. All Stations along the line */}
+                    {cfg.stations && cfg.stations.map((st, idx) => {
+                      const centerPercent = ((st.start + st.end) / 2 / dynamicTrackLength) * 100;
+                      const isPassed = renderStats.myPosition > st.end;
+                      const isCurrent = currentStationIdx === idx;
+                      
+                      return (
+                        <div 
+                          key={`st-${idx}`}
+                          className="absolute top-0 bottom-0 flex flex-col items-center justify-center z-20 pointer-events-none"
+                          style={{
+                            left: `${centerPercent}%`,
+                            transform: 'translateX(-50%)'
+                          }}
+                        >
+                          {/* Station Marker Dot */}
+                          <div 
+                            className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center text-[7.5px] font-bold font-mono transition-all duration-200 ${
+                              isPassed 
+                                ? 'bg-emerald-500 border-emerald-400 text-slate-950 shadow-[0_0_6px_rgba(16,185,129,0.5)]' 
+                                : isCurrent 
+                                  ? 'bg-amber-400 border-amber-300 text-slate-950 animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.7)]' 
+                                  : 'bg-slate-800 border-slate-700 text-slate-400'
+                            }`}
+                          >
+                            {idx + 1}
+                          </div>
+                          {/* Station Name Label */}
+                          <div className={`absolute top-6 text-[8px] font-bold whitespace-nowrap transition-colors duration-200 ${
+                            isCurrent ? 'text-amber-300 font-extrabold drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]' : isPassed ? 'text-emerald-400' : 'text-slate-500'
+                          }`}>
+                            {st.label.replace('駅', '')}
+                          </div>
+                        </div>
+                      );
+                    })}
 
-                    {/* Signals markers on bar */}
-                    <div 
-                      className="absolute w-2 h-full border-x border-amber-500/30 font-mono bg-amber-500/10 flex items-center justify-center font-bold text-[8px] text-amber-400"
-                      style={{ left: `${(cfg.signal1 / dynamicTrackLength) * 100}%` }}
-                    >
-                      🚦1
-                    </div>
-                    {cfg.signal2 && (
-                      <div 
-                        className="absolute w-2 h-full border-x border-amber-500/30 font-mono bg-amber-500/10 flex items-center justify-center font-bold text-[8px] text-amber-400"
-                        style={{ left: `${(cfg.signal2 / dynamicTrackLength) * 100}%` }}
-                      >
-                        🚦2
-                      </div>
-                    )}
+                    {/* 2. All Speed Limit Zones from trackFeatures */}
+                    {(room?.trackFeatures || []).filter(f => f.type === "speed_limit").map((feat) => {
+                      const leftPercent = (feat.position / dynamicTrackLength) * 100;
+                      const widthPercent = (feat.length / dynamicTrackLength) * 100;
+                      const isCurrent = renderStats.myPosition >= feat.position && renderStats.myPosition <= feat.position + feat.length;
+                      
+                      return (
+                        <div 
+                          key={feat.id}
+                          className={`absolute h-full border-x font-mono flex items-center justify-center text-[7.5px] font-black pointer-events-none transition-colors duration-200 z-10 ${
+                            isCurrent 
+                              ? 'bg-rose-500/25 border-rose-400 text-rose-300 shadow-[inset_0_0_8px_rgba(239,68,68,0.4)]' 
+                              : 'bg-rose-950/15 border-rose-950/30 text-rose-400/70'
+                          }`}
+                          style={{
+                            left: `${leftPercent}%`,
+                            width: `${widthPercent}%`
+                          }}
+                        >
+                          <span className="scale-75 sm:scale-90 tracking-tighter">⚡{feat.value}</span>
+                        </div>
+                      );
+                    })}
 
-                    {/* Speed limit zones warnings blocks */}
-                    <div 
-                      className="absolute border-x border-rose-500/30 font-mono bg-rose-500/5 flex items-center justify-center text-[7px]"
-                      style={{ 
-                        left: `${(lineType === 'yamanote' ? 200 : lineType === 'chuo' ? 1600 : 1200) / dynamicTrackLength * 100}%`, 
-                        width: `${(lineType === 'yamanote' ? 250 : lineType === 'chuo' ? 300 : 300) / dynamicTrackLength * 100}%` 
-                      }}
-                    >
-                      {lineType === 'yamanote' ? 'CURVE' : 'BRIDGE'}
-                    </div>
+                    {/* 3. All Signals from trackFeatures */}
+                    {(room?.trackFeatures || []).filter(f => f.type === "signal").map((feat, sIdx) => {
+                      const leftPercent = (feat.position / dynamicTrackLength) * 100;
+                      return (
+                        <div 
+                          key={feat.id}
+                          className="absolute top-0 bottom-0 w-[1px] bg-slate-800/40 z-10 pointer-events-none"
+                          style={{ left: `${leftPercent}%` }}
+                        >
+                          <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[8px] opacity-80" title={feat.label}>
+                            🚦{sIdx + 1}
+                          </div>
+                        </div>
+                      );
+                    })}
 
-                    {/* PLAYER POSITION ICON */}
+                    {/* 4. REAL-TIME PLAYER POSITION INDICATOR (Zero lag) */}
                     <div 
-                      className="absolute w-4 h-4 bg-indigo-500 border border-white rounded-full z-10 transition-all duration-300 flex items-center justify-center -translate-x-1/2 shadow-md shadow-indigo-600/50"
+                      className="absolute w-5 h-5 bg-indigo-500 border-2 border-white rounded-full z-30 flex items-center justify-center -translate-x-1/2 -top-1.5 shadow-md shadow-indigo-600/70 transition-none"
                       style={{ left: `${Math.min(100, (renderStats.myPosition / dynamicTrackLength) * 100)}%` }}
                     >
-                      <span className="text-[8px] text-white font-extrabold">▼</span>
+                      <span className="text-[9px] text-white font-extrabold">▼</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Right Section: Time ticker, remaining distance progress details */}
                 <div className="flex gap-4 items-center">
-                  <div className="text-right">
+                  <div className="text-right relative">
                     <div className="text-[10px] font-mono text-slate-500">ELAPSED TIME</div>
-                    <div className="text-2xl font-mono font-bold text-slate-200 tracking-wider">
+                    <div className="text-2xl font-mono font-bold text-slate-200 tracking-wider flex items-center justify-end gap-1.5">
                       {getElapsedTimeStr()}
+                      {timePenaltyMs > 0 && (
+                        <span className="text-[10px] font-black text-rose-400 bg-rose-950 border border-rose-800 px-1.5 py-0.5 rounded animate-pulse">
+                          +{(timePenaltyMs / 1000).toFixed(1)}s
+                        </span>
+                      )}
+                      {timeBonusMs > 0 && (
+                        <span className="text-[10px] font-black text-emerald-400 bg-emerald-950 border border-emerald-800 px-1.5 py-0.5 rounded animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+                          -{(timeBonusMs / 1000).toFixed(1)}s
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -2714,6 +3640,54 @@ export default function App() {
                       {getLineConfig(room.line || "shonan").quotaTime}.00秒
                     </div>
                   </div>
+
+                  {/* Weather Status Pill */}
+                  {(() => {
+                    const fogDensity = getFogDensity(renderStats.myPosition, room?.line || 'shonan', room?.id);
+                    const rainIntensity = getRainIntensity(renderStats.myPosition, room?.line || 'shonan', room?.id);
+                    
+                    return (
+                      <div className={`border rounded-lg p-2 text-right min-w-[85px] transition-all duration-300 ${
+                        rainIntensity > 0.5 
+                          ? "bg-blue-950/40 border-blue-500/50 animate-pulse text-blue-300 animate-none"
+                          : fogDensity > 0.6 
+                            ? "bg-amber-950/40 border-amber-500/50 animate-pulse text-amber-300" 
+                            : (fogDensity > 0 || rainIntensity > 0)
+                              ? "bg-slate-900 border-slate-800 text-slate-300" 
+                              : "bg-slate-950 border-slate-800 text-slate-400"
+                      }`}>
+                        <div className="text-[9px] font-mono uppercase tracking-wider">天候 (WEATHER)</div>
+                        <div className="text-xs font-bold font-sans flex items-center justify-end gap-1 mt-0.5">
+                          {rainIntensity > 0.5 ? (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping"></span>
+                              <span>豪雨 (HEAVY RAIN)</span>
+                            </>
+                          ) : rainIntensity > 0 ? (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-sky-300"></span>
+                              <span>雨天 (RAIN)</span>
+                            </>
+                          ) : fogDensity > 0.6 ? (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                              <span>濃霧 (FOG)</span>
+                            </>
+                          ) : fogDensity > 0 ? (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                              <span>薄霧 (MIST)</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                              <span>晴天 (CLEAR)</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   <div className="bg-slate-950 border border-slate-800 rounded-lg p-2 text-right">
                     <div className="text-[9px] font-mono text-indigo-400">NEXT GOAL DIST</div>
@@ -2762,6 +3736,36 @@ export default function App() {
                 })}
               </div>
             )}
+
+            {/* Dynamic Weather Overlay: Fog Effect (霧ギミック) */}
+            {(() => {
+              const fogDensity = getFogDensity(renderStats.myPosition, room?.line || 'shonan', room?.id);
+              if (fogDensity <= 0.05) return null;
+              return (
+                <div 
+                  className="absolute inset-0 pointer-events-none z-20 transition-opacity duration-300"
+                  style={{ opacity: fogDensity }}
+                >
+                  <div className="absolute inset-0 bg-fog-pattern1 animate-fog1 opacity-70" />
+                  <div className="absolute inset-0 bg-fog-pattern2 animate-fog2 opacity-50" />
+                </div>
+              );
+            })()}
+
+            {/* Dynamic Weather Overlay: Rain Effect (雨ギミック) */}
+            {(() => {
+              const rainInt = getRainIntensity(renderStats.myPosition, room?.line || 'shonan', room?.id);
+              if (rainInt <= 0.05) return null;
+              const isHeavy = rainInt > 0.5;
+              return (
+                <div 
+                  className={`absolute inset-0 pointer-events-none z-20 transition-all duration-300 ${
+                    isHeavy ? 'animate-rain-heavy bg-slate-900/15' : 'animate-rain-fast'
+                  }`}
+                  style={{ opacity: Math.min(1.0, rainInt * 1.2) }}
+                />
+              );
+            })()}
 
             {/* Station Approaching Overlay Alert */}
             {(() => {
@@ -3445,10 +4449,41 @@ export default function App() {
 
             {/* ATC safety limit Warning alerts overlay */}
             {atcWarning && !renderStats.myDerailed && boardingTimeLeft === 0 && (
-              <div className="absolute left-4 top-4 bg-amber-950/85 border border-amber-600/50 rounded-lg px-3 py-1.5 font-mono text-[10px] text-amber-300 z-10 animate-pulse flex items-center gap-2">
-                <AlertIcon className="w-3.5 h-3.5 animate-bounce" />
-                <span>{atcWarning}</span>
-              </div>
+              (() => {
+                const isSpeedWarning = atcWarning.includes("速度") || atcWarning.includes("制限") || atcWarning.includes("超過") || atcWarning.includes("予告") || atcWarning.includes("🚫");
+                if (isSpeedWarning) {
+                  const isOverSpeed = atcWarning.includes("超過") || atcWarning.includes("🚫") || atcWarning.includes("超過制限");
+                  return (
+                    <div 
+                      id="atc-speed-limit-warning-centered"
+                      className={`absolute left-1/2 top-4 -translate-x-1/2 z-25 max-w-sm w-max rounded-xl border-2 px-4 py-2 flex items-center gap-2.5 font-mono text-xs sm:text-sm font-black tracking-wide shadow-2xl ${
+                        isOverSpeed 
+                          ? "bg-red-950/95 border-red-500 text-red-200 shadow-[0_0_25px_rgba(239,68,68,0.7)] animate-bounce"
+                          : "bg-amber-950/95 border-amber-500 text-amber-200 shadow-[0_0_20px_rgba(245,158,11,0.6)] animate-pulse"
+                      }`}
+                    >
+                      <AlertIcon className={`w-5 h-5 shrink-0 ${isOverSpeed ? "text-red-400 animate-pulse" : "text-amber-400"}`} />
+                      <div className="flex flex-col text-left">
+                        <span className={`text-[9px] uppercase font-bold tracking-widest leading-none ${isOverSpeed ? "text-red-400" : "text-amber-400"}`}>
+                          {isOverSpeed ? "⚠️ ATC SPEED OVER LIMIT / 速度制限超過" : "📢 ATC SPEED NOTICE / 制限速度予告"}
+                        </span>
+                        <span className="mt-1 leading-tight">{atcWarning}</span>
+                      </div>
+                    </div>
+                  );
+                } else {
+                  // Fallback to top-left overlay for non-speed notices (e.g. general info)
+                  return (
+                    <div 
+                      id="atc-warning-top-left-fallback"
+                      className="absolute left-4 top-4 bg-slate-950/90 border border-slate-700/60 rounded-lg px-3 py-1.5 font-mono text-[10px] text-slate-300 z-10 flex items-center gap-2 shadow-lg"
+                    >
+                      <AlertIcon className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>{atcWarning}</span>
+                    </div>
+                  );
+                }
+              })()
             )}
 
             {/* Speed Boost notifier indicator */}
@@ -3458,6 +4493,29 @@ export default function App() {
                 <span>⚡️ 大磯停車ブースト（残: {Math.round(boostTimer)}s） x1.6 加速!</span>
               </div>
             )}
+
+            {/* Drifting Fog Weather Overlay (Dynamic Density based on position) */}
+            {(() => {
+              const fogDensity = getFogDensity(renderStats.myPosition, room?.line || 'shonan');
+              if (fogDensity <= 0) return null;
+              
+              return (
+                <div 
+                  className="absolute inset-0 pointer-events-none z-15 select-none transition-opacity duration-300"
+                  style={{ opacity: fogDensity }}
+                >
+                  {/* Layer 1: Thick Base Drift */}
+                  <div className="absolute inset-0 bg-fog-pattern1 animate-fog1 mix-blend-screen opacity-70" />
+                  {/* Layer 2: Rapid Drifting Swirls */}
+                  <div className="absolute inset-0 bg-fog-pattern2 animate-fog2 mix-blend-screen opacity-50" />
+                  {/* Layer 3: Screen Fog Overlay Filter (Dim/Blur backdrop) */}
+                  <div 
+                    className="absolute inset-0 bg-slate-100/10" 
+                    style={{ backdropFilter: `blur(${fogDensity * 1.5}px)` }}
+                  />
+                </div>
+              );
+            })()}
 
           </section>
 
@@ -3480,14 +4538,14 @@ export default function App() {
 
       {/* --- SCREEN 4: GAME OVER / RACE COMPLETE PODIUM --- */}
       {activeScreen === "completed" && room && (
-        <main className="flex-1 max-w-lg w-full mx-auto p-6 md:p-8 flex flex-col justify-center items-center my-auto text-slate-100">
-          <div className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6 text-center">
+        <main className="flex-1 max-w-lg w-full mx-auto p-4 sm:p-5 flex flex-col justify-center items-center my-auto text-slate-100 overflow-y-auto max-h-full">
+          <div className="w-full bg-slate-900 border-2 border-slate-800 rounded-2xl p-4 sm:p-5 md:p-6 shadow-2xl space-y-4 text-center my-auto">
             
-            <div className="space-y-2 border-b border-slate-800 pb-5">
-              <div className="w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center mx-auto shadow-md shadow-amber-500/25">
-                <Award className="w-10 h-10 text-slate-950 animate-bounce" />
+            <div className="space-y-1.5 border-b border-slate-800 pb-3">
+              <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mx-auto shadow-md shadow-amber-500/25">
+                <Award className="w-7 h-7 text-slate-950 animate-bounce" />
               </div>
-              <h2 className="text-2xl font-mono font-bold text-slate-100">
+              <h2 className="text-xl sm:text-2xl font-mono font-bold text-slate-100">
                 タイムアタック 終了！
               </h2>
               <p className="text-xs text-slate-400 font-mono">
@@ -3502,17 +4560,17 @@ export default function App() {
               const isCleared = renderStats.myFinishTime && (renderStats.myFinishTime <= cfg.quotaTime * 1000);
               
               return (
-                <div className="space-y-4 bg-slate-950 border border-slate-800/80 rounded-xl p-5 text-left font-mono">
+                <div className="space-y-3 bg-slate-950 border border-slate-800/80 rounded-xl p-4 text-left font-mono">
                   
                   {/* Status Banner */}
-                  <div className="text-center py-3 rounded-lg border flex flex-col justify-center items-center gap-1 bg-slate-900 border-slate-800">
+                  <div className="text-center py-2 rounded-lg border flex flex-col justify-center items-center gap-0.5 bg-slate-900 border-slate-800">
                     <span className="text-[10px] text-slate-500 uppercase tracking-widest">クリア目標判定</span>
                     {isCleared ? (
-                      <span className="text-xl font-bold font-sans text-emerald-400 animate-pulse flex items-center gap-1">
+                      <span className="text-lg sm:text-xl font-bold font-sans text-emerald-400 animate-pulse flex items-center gap-1">
                         🏆 ノルマ達成 (STAGE CLEAR!)
                       </span>
                     ) : (
-                      <span className="text-xl font-bold font-sans text-rose-500 animate-pulse flex items-center gap-1">
+                      <span className="text-lg sm:text-xl font-bold font-sans text-rose-500 animate-pulse flex items-center gap-1">
                         🚨 ノルマ未達成 (STAGE FAILED)
                       </span>
                     )}
@@ -3560,14 +4618,22 @@ export default function App() {
                         -{(stationPausedAccumMs / 1000).toFixed(2)} 秒
                       </span>
                     </div>
+
+                    {/* Overrun Time Penalty */}
+                    <div className="flex justify-between items-center py-0.5 border-t border-slate-900/50">
+                      <span className="text-slate-400">駅オーバーランペナルティ加算：</span>
+                      <span className={`font-bold ${timePenaltyMs > 0 ? 'text-rose-400 animate-pulse' : 'text-slate-400'}`}>
+                        +{(timePenaltyMs / 1000).toFixed(2)} 秒
+                      </span>
+                    </div>
                   </div>
 
                   {isCleared ? (
-                    <div className="mt-4 p-3 bg-emerald-950/30 border border-emerald-900/60 rounded-lg text-[10.5px] text-emerald-300 text-center leading-relaxed">
+                    <div className="mt-2.5 p-2 bg-emerald-950/30 border border-emerald-900/60 rounded-lg text-[10.5px] text-emerald-300 text-center leading-relaxed">
                       🎉 おめでとうございます！過酷な速度超過ペナルティと駅制動を乗り越え、制限ノルマをクリアしました！
                     </div>
                   ) : (
-                    <div className="mt-4 p-3 bg-rose-950/20 border border-rose-900/50 rounded-lg text-[10.5px] text-rose-350 text-center leading-relaxed">
+                    <div className="mt-2.5 p-2 bg-rose-950/20 border border-rose-900/50 rounded-lg text-[10.5px] text-rose-350 text-center leading-relaxed">
                       🏁 タイムアップ！速度制限を遵守し、途中駅でのエクセレント停車（15秒ブースト）を有効活用してタイム短縮を狙いましょう！
                     </div>
                   )}
@@ -3575,14 +4641,32 @@ export default function App() {
               );
             })()}
 
-            {/* Back action */}
-            <div className="pt-4 border-t border-slate-800">
+            {/* Back actions */}
+            <div className="pt-3.5 border-t border-slate-800 flex flex-col gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  id="btn-replay-race"
+                  onClick={() => { playSynthSound("chime"); handleReplayRace(); }}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition-all transform hover:-translate-y-0.5 text-xs sm:text-sm"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" /> 
+                  もう一度挑戦
+                </button>
+                <button
+                  id="btn-back-selection"
+                  onClick={() => { playSynthSound("beep"); handleBackToSelection(); }}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-mono font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md transition-all transform hover:-translate-y-0.5 text-xs sm:text-sm"
+                >
+                  <Compass className="w-3.5 h-3.5" /> 
+                  選択画面に戻る
+                </button>
+              </div>
               <button
-                onClick={handleLeaveRace}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-mono font-bold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-lg transition-all transform hover:-translate-y-0.5"
+                id="btn-leave-lobby"
+                onClick={() => { playSynthSound("beep"); handleLeaveRace(); }}
+                className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono font-medium py-2 px-4 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer transition-all text-xs"
               >
-                <RotateCcw className="w-4 h-4" /> 
-                競路乗務員ロビーへ戻る
+                ロビー（タイトル）画面に戻る
               </button>
             </div>
 

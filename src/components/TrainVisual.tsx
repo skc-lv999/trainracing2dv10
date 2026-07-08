@@ -6,7 +6,7 @@ interface TrainVisualProps {
   isPlayer?: boolean;    // Custom badge or tint for distinguishing
   derailed?: boolean;    // Shaking / smoke effect if derailed
   isAI?: boolean;        // CPU opponent styling
-  line?: 'yamanote' | 'chuo' | 'shonan'; // Target line styling
+  line?: 'yamanote' | 'chuo' | 'shonan' | 'yokosuka' | 'sobukanko' | 'keiyo'; // Target line styling
   carType?: 'front' | 'middle' | 'tail'; // Vehicle segment type (front, middle, tail)
   hasPantograph?: boolean; // Whether middle car has a pantograph
 }
@@ -60,6 +60,28 @@ export const TrainVisual: React.FC<TrainVisualProps> = ({
     jrLogoColor = "#006c35"; // JR East is standard green
     jrLogoStroke = "#004d26";
     destTitle = "中央特快";
+  } else if (line === "yokosuka") {
+    primaryStripe = "url(#yokosuka-blue)";
+    secondaryStripe = "url(#yokosuka-cream)";
+    stripeStyle = "double";
+    seriesLabel = carType === "middle" ? (hasPantograph ? "モハE217-2004" : "サハE217-2004") : isTailCar ? "クハE216-2004" : "クハE217-2004";
+    jrLogoColor = "#006c35";
+    jrLogoStroke = "#004d26";
+    destTitle = "快速";
+  } else if (line === "sobukanko") {
+    primaryStripe = "url(#sobukanko-yellow)";
+    stripeStyle = "single";
+    seriesLabel = carType === "middle" ? (hasPantograph ? "モハE231-546" : "サハE231-546") : isTailCar ? "クハE230-546" : "クハE231-546";
+    jrLogoColor = "#006c35";
+    jrLogoStroke = "#004d26";
+    destTitle = "各駅停車";
+  } else if (line === "keiyo") {
+    primaryStripe = "url(#keiyo-rose)";
+    stripeStyle = "single";
+    seriesLabel = carType === "middle" ? (hasPantograph ? "モハE233-5002" : "サハE233-5002") : isTailCar ? "クハE232-5002" : "クハE233-5002";
+    jrLogoColor = "#006c35";
+    jrLogoStroke = "#004d26";
+    destTitle = "快速";
   }
 
   return (
@@ -143,6 +165,28 @@ export const TrainVisual: React.FC<TrainVisualProps> = ({
           <linearGradient id="chuo-orange" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#ff5f00" />
             <stop offset="100%" stopColor="#d84b00" />
+          </linearGradient>
+
+          {/* Yokosuka Blue & Cream Gradient */}
+          <linearGradient id="yokosuka-blue" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#003399" />
+            <stop offset="100%" stopColor="#001a4d" />
+          </linearGradient>
+          <linearGradient id="yokosuka-cream" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#fdf8e2" />
+            <stop offset="100%" stopColor="#e8d5ad" />
+          </linearGradient>
+
+          {/* Sobu Kanko Yellow Gradient */}
+          <linearGradient id="sobukanko-yellow" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#facc15" />
+            <stop offset="100%" stopColor="#d97706" />
+          </linearGradient>
+
+          {/* Keiyo Rose/Wine Red Gradient */}
+          <linearGradient id="keiyo-rose" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#e11d48" />
+            <stop offset="100%" stopColor="#881337" />
           </linearGradient>
 
           {/* Window Glass Gradient */}
